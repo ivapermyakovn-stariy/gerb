@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Викторина: Герб России</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    font-family: 'Georgia', 'Segoe UI', serif;
+    background: #0b1a3a;
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(212,175,55,0.25), transparent 60%),
+      radial-gradient(circle at 50% 100%, rgba(0,57,166,0.4), transparent 60%),
+      linear-gradient(180deg, #061024 0%, #0b1a3a 50%, #061024 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    color: #f5f2e8;
+  }
+  /* Триколорная полоса сверху */
+  .tricolor {
+    position: fixed; top: 0; left: 0; right: 0; height: 8px;
+    display: flex; z-index: 10;
+  }
+  .tricolor div { flex: 1; }
+  .tricolor .w { background: #fff; }
+  .tricolor .b { background: #0039a6; }
+  .tricolor .r { background: #d52b1e; }
+
+  .card {
+    position: relative;
+    background: linear-gradient(160deg, #10214a 0%, #0a1630 100%);
+    border: 2px solid #d4af37;
+    border-radius: 18px;
+    padding: 40px 32px 32px;
+    max-width: 560px;
+    width: 100%;
+    box-shadow: 0 0 0 1px rgba(212,175,55,0.3),
+                0 25px 60px rgba(0,0,0,0.6),
+                inset 0 0 40px rgba(212,175,55,0.06);
+    overflow: hidden;
+  }
+  .card::before {
+    content: "";
+    position: absolute; inset: 8px;
+    border: 1px solid rgba(212,175,55,0.35);
+    border-radius: 12px;
+    pointer-events: none;
+  }
+
+  .crest {
+    text-align: center;
+    font-size: 54px;
+    line-height: 1;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 0 14px rgba(212,175,55,0.7));
+  }
+  h1 {
+    text-align: center;
+    font-size: 26px;
+    color: #d4af37;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    text-shadow: 0 2px 8px rgba(212,175,55,0.3);
+  }
+  .subtitle {
+    text-align: center;
+    color: #9fb0d0;
+    font-size: 13px;
+    font-style: italic;
+    margin-bottom: 26px;
+    letter-spacing: 0.5px;
+  }
+
+  .progress {
+    display: flex; justify-content: space-between; align-items: center;
+    color: #9fb0d0; font-size: 13px; margin-bottom: 14px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .progress b { color: #d4af37; }
+
+  .bar {
+    height: 6px; background: rgba(255,255,255,0.08);
+    border-radius: 4px; overflow: hidden; margin-bottom: 22px;
+  }
+  .bar > div {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #d4af37, #f2d675);
+    transition: width .4s ease;
+  }
+
+  .question {
+    font-size: 19px;
+    line-height: 1.5;
+    margin-bottom: 22px;
+    min-height: 56px;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 12px; }
+
+  button.opt {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    text-align: left;
+    padding: 15px 18px;
+    color: #f5f2e8;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(212,175,55,0.35);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background .18s, border-color .18s, transform .1s;
+  }
+  button.opt:hover:not(:disabled) {
+    background: rgba(212,175,55,0.12);
+    border-color: #d4af37;
+    transform: translateX(3px);
+  }
+  button.opt:disabled { cursor: default; }
+  button.opt.correct {
+    background: rgba(39,174,96,0.25);
+    border-color: #27ae60;
+    color: #bff0d4;
+  }
+  button.opt.wrong {
+    background: rgba(213,43,30,0.25);
+    border-color: #d52b1e;
+    color: #ffc9c4;
+  }
+
+  .feedback {
+    margin-top: 18px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 20px;
+    color: #9fb0d0;
+  }
+  .feedback.good { color: #6fdc8c; }
+  .feedback.bad { color: #ff9b90; }
+
+  .next {
+    margin-top: 20px;
+    width: 100%;
+    padding: 14px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #0b1a3a;
+    background: linear-gradient(180deg, #f2d675, #d4af37);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    display: none;
+    transition: filter .2s, transform .1s;
+  }
+  .next:hover { filter: brightness(1.08); }
+  .next:active { transform: scale(0.99); }
+
+  /* Экран результата */
+  .result { text-align: center; display: none; }
+  .result .crest { font-size: 64px; }
+  .result h2 {
+    color: #d4af37; font-size: 24px; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .score-big {
+    font-size: 44px; color: #fff; margin: 14px 0;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .score-big b { color: #d4af37; }
+  .result .verdict {
+    color: #9fb0d0; font-family: 'Segoe UI', sans-serif;
+    font-size: 15px; line-height: 1.6; margin-bottom: 26px;
+  }
+  .restart {
+    padding: 14px 30px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 16px; font-weight: 700;
+    color: #0b1a3a;
+    background: linear-gradient(180deg, #f2d675, #d4af37);
+    border: none; border-radius: 12px; cursor: pointer;
+    transition: filter .2s;
+  }
+  .restart:hover { filter: brightness(1.08); }
+
+  @media (max-width: 480px) {
+    .card { padding: 30px 20px 24px; }
+    h1 { font-size: 21px; }
+    .question { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+  <div class="tricolor">
+    <div class="w"></div><div class="b"></div><div class="r"></div>
+  </div>
+
+  <div class="card">
+    <div id="quiz">
+      <div class="crest">🦅</div>
+      <h1>Герб России</h1>
+      <p class="subtitle">Викторина ко Дню Государственного герба</p>
+
+      <div class="progress">
+        <span>Вопрос <b id="qNum">1</b> из <b id="qTotal">0</b></span>
+        <span>Правильно: <b id="scoreLive">0</b></span>
+      </div>
+      <div class="bar"><div id="barFill"></div></div>
+
+      <div class="question" id="question">Загрузка…</div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next" id="nextBtn">Далее →</button>
+    </div>
+
+    <div class="result" id="result">
+      <div class="crest">🦅</div>
+      <h2>Викторина завершена</h2>
+      <div class="score-big"><b id="finalScore">0</b> / <span id="finalTotal">0</span></div>
+      <p class="verdict" id="verdict"></p>
+      <button class="restart" id="restartBtn">Пройти заново</button>
+    </div>
+  </div>
+
+<script>
+  const questions = [
+    {
+      q: "Какой элемент является центральной фигурой герба России?",
+      options: ["Двуглавый орёл", "Медведь", "Георгий Победоносец", "Корона"],
+      correct: 0,
+      fact: "Двуглавый орёл — главная фигура герба. Он символизирует единство и защиту."
+    },
+    {
+      q: "Сколько корон венчает орла на современном гербе России?",
+      options: ["Одна", "Две", "Три", "Четыре"],
+      correct: 2,
+      fact: "Три короны символизируют суверенитет страны и единство её частей."
+    },
+    {
+      q: "Что орёл держит в лапах на гербе?",
+      options: ["Меч и щит", "Скипетр и державу", "Лавровую ветвь", "Знамя и крест"],
+      correct: 1,
+      fact: "Скипетр и держава — символы государственной власти."
+    },
+    {
+      q: "В каком году был официально утверждён современный герб России?",
+      options: ["1991", "1993", "2000", "2001"],
+      correct: 1,
+      fact: "Указ о восстановлении исторического герба был подписан в 1993 году."
+    },
+    {
+      q: "Что изображено на щите на груди орла?",
+      options: ["Двуглавый орёл", "Всадник, поражающий копьём дракона", "Звезда", "Здание Кремля"],
+      correct: 1,
+      fact: "Это Георгий Победоносец — символ защиты Отечества."
+    },
+    {
+      q: "Какого цвета орёл на гербе России?",
+      options: ["Серебряный", "Белый", "Золотой", "Красный"],
+      correct: 2,
+      fact: "Орёл изображён золотым на красном щите."
+    },
+    {
+      q: "Какого цвета щит на государственном гербе России?",
+      options: ["Синий", "Красный", "Зелёный", "Белый"],
+      correct: 1,
+      fact: "Красный щит — знак мужества и героизма."
+    },
+    {
+      q: "Какой месяц отмечается как День Государственного герба РФ?",
+      options: ["Май", "Сентябрь", "Ноябрь", "Декабрь"],
+      correct: 2,
+      fact: "30 ноября — День Государственного герба Российской Федерации."
+    }
+  ];
+
+  let current = 0, score = 0, answered = false;
+
+  const el = id => document.getElementById(id);
+  const optionsBox = el('options');
+  const feedback = el('feedback');
+  const nextBtn = el('nextBtn');
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function render() {
+    answered = false;
+    const item = questions[current];
+
+    el('qNum').textContent = current + 1;
+    el('qTotal').textContent = questions.length;
+    el('scoreLive').textContent = score;
+    el('barFill').style.width = (current / questions.length * 100) + '%';
+    el('question').textContent = item.q;
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+    nextBtn.style.display = 'none';
+    nextBtn.textContent = current === questions.length - 1 ? 'Показать результат' : 'Далее →';
+
+    // Перемешиваем варианты, сохраняя правильный
+    const indices = shuffle(item.options.map((_, i) => i));
+    optionsBox.innerHTML = '';
+    indices.forEach(idx => {
+      const btn = document.createElement('button');
+      btn.className = 'opt';
+      btn.textContent = item.options[idx];
+      btn.addEventListener('click', () => choose(btn, idx, item));
+      optionsBox.appendChild(btn);
+    });
+  }
+
+  function choose(btn, idx, item) {
+    if (answered) return;
+    answered = true;
+
+    const buttons = optionsBox.querySelectorAll('button');
+    buttons.forEach(b => b.disabled = true);
+
+    if (idx === item.correct) {
+      btn.classList.add('correct');
+      score++;
+      el('scoreLive').textContent = score;
+      feedback.textContent = '✔ Верно! ' + item.fact;
+      feedback.className = 'feedback good';
+    } else {
+      btn.classList.add('wrong');
+      // Подсветить правильный
+      buttons.forEach(b => {
+        if (b.textContent === item.options[item.correct]) b.classList.add('correct');
+      });
+      feedback.textContent = '✘ Неверно. ' + item.fact;
+      feedback.className = 'feedback bad';
+    }
+
+    nextBtn.style.display = 'block';
+  }
+
+  nextBtn.addEventListener('click', () => {
+    current++;
+    if (current < questions.length) render();
+    else showResult();
+  });
+
+  function showResult() {
+    el('quiz').style.display = 'none';
+    el('result').style.display = 'block';
+
+    el('finalScore').textContent = score;
+    el('finalTotal').textContent = questions.length;
+
+    const pct = score / questions.length;
+    let verdict;
+    if (pct === 1) verdict = 'Блестяще! Вы настоящий знаток государственной символики России. 🇷🇺';
+    else if (pct >= 0.75) verdict = 'Отличный результат! Вы хорошо знаете историю герба России.';
+    else if (pct >= 0.5) verdict = 'Неплохо! Но есть что повторить — символы страны достойны знания.';
+    else verdict = 'Стоит поближе познакомиться с гербом России — начните с истории двуглавого орла.';
+    el('verdict').textContent = verdict;
+  }
+
+  el('restartBtn').addEventListener('click', () => {
+    current = 0; score = 0;
+    el('result').style.display = 'none';
+    el('quiz').style.display = 'block';
+    render();
+  });
+
+  render();
+</script>
+</body>
+</html>
