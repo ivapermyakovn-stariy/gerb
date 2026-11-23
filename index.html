@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Патриотическая Викторина | Моя Россия</title>
+    <title>Викторина ко Дню Герба РФ | Моя Россия</title>
     <style>
         :root {
             --gold: #D4AF37;
@@ -49,7 +49,7 @@
         header { text-align: center; margin-bottom: 30px; }
         .emblem { font-size: 50px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6)); }
         h1 {
-            font-size: 28px; font-weight: 700; text-transform: uppercase;
+            font-size: 26px; font-weight: 700; text-transform: uppercase;
             letter-spacing: 2px; color: var(--gold);
             text-shadow: 0 2px 5px rgba(0,0,0,0.5); margin-bottom: 5px;
         }
@@ -107,7 +107,7 @@
         }
 
         .question-number { font-size: 14px; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
-        .question-text { font-size: 22px; font-weight: 600; line-height: 1.4; margin-bottom: 30px; min-height: 60px; }
+        .question-text { font-size: 21px; font-weight: 600; line-height: 1.4; margin-bottom: 30px; min-height: 60px; }
 
         .options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; }
         .option {
@@ -132,7 +132,7 @@
 
         /* Результаты */
         .result-screen { display: none; text-align: center; }
-        .result-title { font-size: 32px; color: var(--gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .result-title { font-size: 30px; color: var(--gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
         .result-name { font-size: 18px; margin-bottom: 25px; color: #ddd; }
 
         .score-circle {
@@ -189,9 +189,8 @@
             text-align: center; padding: 20px; color: #aaa; font-style: italic;
         }
 
-        /* Кнопки экспорта */
         .export-buttons {
-            display: flex; gap: 10px; margin-top: 20px; justify-content: center;
+            display: flex; gap: 10px; margin-top: 20px; justify-content: center; flex-wrap: wrap;
         }
         .btn-small {
             padding: 10px 16px; font-size: 13px; letter-spacing: 1px;
@@ -208,8 +207,8 @@
 
         @media (max-width: 600px) {
             .container { padding: 25px 20px; }
-            h1 { font-size: 22px; }
-            .question-text { font-size: 18px; }
+            h1 { font-size: 20px; }
+            .question-text { font-size: 17px; }
             .btn { font-size: 16px; padding: 14px 20px; }
             .option { font-size: 14px; padding: 14px 16px; }
             .leaderboard-table th, .leaderboard-table td { padding: 8px 6px; font-size: 12px; }
@@ -224,14 +223,14 @@
 </head>
 <body>
 
-    <div class="bg-symbol left">★</div>
-    <div class="bg-symbol right">★</div>
+    <div class="bg-symbol left">🦅</div>
+    <div class="bg-symbol right">🛡️</div>
 
     <div class="container">
         <header>
-            <div class="emblem">🇷🇺</div>
-            <h1>Патриотическая Викторина</h1>
-            <div class="subtitle">Моя Россия — Моя История</div>
+            <div class="emblem">🦅</div>
+            <h1>День Государственного герба РФ</h1>
+            <div class="subtitle">30 ноября — Символы России</div>
         </header>
 
         <!-- Экран регистрации -->
@@ -254,9 +253,7 @@
             </div>
             <div class="leaderboard">
                 <h2>🏆 Таблица лидеров</h2>
-                <div id="leaderboardContent">
-                    <!-- Сюда вставляется таблица -->
-                </div>
+                <div id="leaderboardContent"></div>
             </div>
         </div>
 
@@ -297,9 +294,7 @@
 
             <div class="leaderboard">
                 <h2>🏆 Таблица лидеров</h2>
-                <div id="leaderboardContentResult">
-                    <!-- Сюда вставляется таблица -->
-                </div>
+                <div id="leaderboardContentResult"></div>
                 <div class="export-buttons">
                     <button class="btn-small" id="exportBtn">📥 Экспорт результатов</button>
                     <button class="btn-small" id="importBtn">📤 Импорт результатов</button>
@@ -311,20 +306,68 @@
     </div>
 
     <script>
-        // --- Вопросы ---
+        // --- Вопросы ко Дню Герба РФ (30 ноября) ---
         const questions = [
-            { text: "Какой город является столицей Российской Федерации?", options: ["Санкт-Петербург", "Москва", "Казань", "Новосибирск"], correct: 1 },
-            { text: "Как называется основной закон Российской Федерации?", options: ["Устав", "Конституция", "Кодекс", "Декрет"], correct: 1 },
-            { text: "Какие цвета присутствуют на флаге России?", options: ["Красный, синий, зелёный", "Белый, синий, красный", "Белый, жёлтый, красный", "Чёрный, жёлтый, белый"], correct: 1 },
-            { text: "Кто является автором музыки гимна Российской Федерации?", options: ["П.И. Чайковский", "А.В. Александров", "М.И. Глинка", "С.В. Рахманинов"], correct: 1 },
-            { text: "В каком году произошло Крещение Руси?", options: ["988 год", "1147 год", "862 год", "1240 год"], correct: 0 },
-            { text: "Кто был первым космонавтом планеты?", options: ["Герман Титов", "Юрий Гагарин", "Алексей Леонов", "Валентина Терешкова"], correct: 1 },
-            { text: "Какое озеро является самым глубоким в мире и находится в России?", options: ["Ладожское", "Байкал", "Онежское", "Каспийское"], correct: 1 },
-            { text: "Какой полководец командовал русской армией в Отечественной войне 1812 года?", options: ["А.В. Суворов", "М.И. Кутузов", "П.С. Нахимов", "Г.К. Жуков"], correct: 1 },
-            { text: "Как называется главная площадь Москвы?", options: ["Площадь Победы", "Красная площадь", "Манежная площадь", "Театральная площадь"], correct: 1 },
-            { text: "Какое дерево является символом России?", options: ["Дуб", "Берёза", "Клён", "Сосна"], correct: 1 },
-            { text: "В каком городе находится Эрмитаж — один из крупнейших музеев мира?", options: ["Москва", "Санкт-Петербург", "Екатеринбург", "Нижний Новгород"], correct: 1 },
-            { text: "Какой праздник отмечается в России 9 мая?", options: ["День России", "День Победы", "День народного единства", "День защитника Отечества"], correct: 1 }
+            {
+                text: "Какого числа в России отмечается День Государственного герба?",
+                options: ["12 июня", "30 ноября", "9 мая", "4 ноября"],
+                correct: 1
+            },
+            {
+                text: "Что изображено на Государственном гербе Российской Федерации?",
+                options: ["Серп и молот", "Двуглавый орёл", "Медведь", "Святой Георгий на коне"],
+                correct: 1
+            },
+            {
+                text: "Сколько голов у орла на гербе России?",
+                options: ["Одна", "Две", "Три", "Четыре"],
+                correct: 1
+            },
+            {
+                text: "Что держит двуглавый орёл на гербе России?",
+                options: ["Меч и щит", "Скипетр и державу", "Лавровый венок", "Флаг и знамя"],
+                correct: 1
+            },
+            {
+                text: "В каком году Государственный герб РФ был утверждён в современном виде?",
+                options: ["1991 год", "1993 год", "2000 год", "2014 год"],
+                correct: 1
+            },
+            {
+                text: "Какая фигура изображена на щите, который держит орёл?",
+                options: ["Святой Георгий Победоносец", "Александр Невский", "Дмитрий Донской", "Иван Грозный"],
+                correct: 0
+            },
+            {
+                text: "Кто изображён на щите герба: змей или дракон?",
+                options: ["Змей", "Дракон", "Оба", "Никто"],
+                correct: 0
+            },
+            {
+                text: "Какой документ утверждает описание Государственного герба РФ?",
+                options: ["Конституция РФ", "Федеральный конституционный закон", "Указ Президента", "Постановление Правительства"],
+                correct: 1
+            },
+            {
+                text: "Какого цвета щит на Государственном гербе РФ?",
+                options: ["Синий", "Красный", "Золотой", "Зелёный"],
+                correct: 1
+            },
+            {
+                text: "Что означает двуглавый орёл на гербе?",
+                options: ["Силу и мощь", "Единство Востока и Запада", "Победу над врагом", "Мудрость и знания"],
+                correct: 1
+            },
+            {
+                text: "С какого времени двуглавый орёл стал символом Руси?",
+                options: ["С IX века", "С XV века (при Иване III)", "С XVIII века", "С XX века"],
+                correct: 1
+            },
+            {
+                text: "Что символизируют скипетр и держава в лапах орла?",
+                options: ["Богатство и власть", "Государственную власть и единство", "Военную силу", "Торговлю и ремёсла"],
+                correct: 1
+            }
         ];
 
         // --- Состояние ---
@@ -357,16 +400,14 @@
         const clearBtn = document.getElementById('clearBtn');
         const importFile = document.getElementById('importFile');
 
-        // --- Работа с localStorage ---
-        const STORAGE_KEY = 'patriot_quiz_results';
+        // --- localStorage ---
+        const STORAGE_KEY = 'gerb_quiz_results';
 
         function getResults() {
             try {
                 const data = localStorage.getItem(STORAGE_KEY);
                 return data ? JSON.parse(data) : [];
-            } catch (e) {
-                return [];
-            }
+            } catch (e) { return []; }
         }
 
         function saveResult(result) {
@@ -375,11 +416,9 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
         }
 
-        function clearResults() {
-            localStorage.removeItem(STORAGE_KEY);
-        }
+        function clearResults() { localStorage.removeItem(STORAGE_KEY); }
 
-        // --- Отрисовка таблицы лидеров ---
+        // --- Таблица лидеров ---
         function renderLeaderboard(container) {
             const results = getResults();
 
@@ -388,7 +427,6 @@
                 return;
             }
 
-            // Сортируем: по убыванию счёта, затем по дате (новые сверху)
             results.sort((a, b) => {
                 if (b.score !== a.score) return b.score - a.score;
                 return new Date(b.date) - new Date(a.date);
@@ -452,7 +490,7 @@
             renderQuestion();
         });
 
-        // --- Отрисовка вопроса ---
+        // --- Вопрос ---
         function renderQuestion() {
             const q = questions[currentQuestion];
             const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
@@ -517,7 +555,6 @@
                 if (answer === questions[index].correct) score++;
             });
 
-            // Сохраняем результат
             const result = {
                 firstName: userData.firstName,
                 lastName: userData.lastName,
@@ -545,16 +582,14 @@
             }, 80);
 
             let message = '';
-            if (score === 12) message = '🌟 <strong>Великолепно!</strong> Вы настоящий знаток истории и культуры России!';
-            else if (score >= 10) message = '🏅 <strong>Отличный результат!</strong> Вы хорошо знаете свою страну.';
-            else if (score >= 7) message = '📚 <strong>Хороший результат!</strong> Есть куда расти — узнавайте больше о России!';
-            else if (score >= 4) message = '💡 <strong>Неплохо!</strong> Но стоит освежить знания.';
-            else message = '📖 <strong>Не расстраивайтесь!</strong> Каждый день — повод узнать что-то новое.';
+            if (score === 12) message = '🌟 <strong>Великолепно!</strong> Вы настоящий знаток Государственного герба России!';
+            else if (score >= 10) message = '🏅 <strong>Отличный результат!</strong> Вы хорошо знаете символы своей страны.';
+            else if (score >= 7) message = '📚 <strong>Хороший результат!</strong> Есть куда расти — изучайте историю герба!';
+            else if (score >= 4) message = '💡 <strong>Неплохо!</strong> Но стоит освежить знания о государственных символах.';
+            else message = '📖 <strong>Не расстраивайтесь!</strong> Каждый день — повод узнать что-то новое о России.';
             resultMessage.innerHTML = message;
 
             nextBtn.textContent = 'Вперёд →';
-
-            // Обновляем таблицу лидеров
             renderAllLeaderboards();
         }
 
@@ -579,7 +614,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `викторина_результаты_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `герб_викторина_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -595,7 +630,6 @@
                     const imported = JSON.parse(ev.target.result);
                     if (!Array.isArray(imported)) throw new Error('Неверный формат');
                     const existing = getResults();
-                    // Объединяем, избегая дубликатов по (имя+фамилия+класс+дата)
                     const key = (r) => `${r.lastName}|${r.firstName}|${r.className}|${r.date}`;
                     const existingKeys = new Set(existing.map(key));
                     const merged = [...existing];
@@ -617,7 +651,7 @@
         });
 
         clearBtn.addEventListener('click', () => {
-            if (confirm('Вы уверены, что хотите удалить все результаты? Это действие нельзя отменить.')) {
+            if (confirm('Вы уверены, что хотите удалить все результаты?')) {
                 clearResults();
                 renderAllLeaderboards();
             }
